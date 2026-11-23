@@ -1,0 +1,7 @@
+#path: C:\Users\86198\Desktop\存\shuju\MaDataSet_Optimization-main\Crack_MaDataSet_1 # 图片路径
+train: D:\Wood_Crack_Project\images\train # 训练集D:\Wood_Crack_Project\images\train
+val: D:\Wood_Crack_Project\images\val # 验证集
+test: D:\Wood_Crack_Project\images\test # 测试集
+# Classes
+names:
+  0: crack
