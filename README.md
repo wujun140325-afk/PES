@@ -1,233 +1,314 @@
-<p align="center">
-    <img src="assets/icon.png" width="110" style="margin-bottom: 0.2;"/>
-<p>
-<h2 align="center">YOLOv13: Real-Time Object Detection with Hypergraph-Enhanced Adaptive Visual Perception</h2>
+# Multi-Object Tracking with Ultralytics YOLO
 
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-b31b1b?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2506.17733)
-[![iMoonLab](https://img.shields.io/badge/iMoonLab-Homepage-blueviolet?logo=github&logoColor=white)](https://github.com/iMoonLab)
-[![HyperAI Demo](https://img.shields.io/badge/HyperAI-Demo-red?logo=hyperledger&logoColor=white)](https://app.hyper.ai/console/public/tutorials/NIC3cpjlw7u)
-  
-<div align="center">
-    <img src="assets/framework.png">
-</div>
+<img width="1024" src="https://user-images.githubusercontent.com/26833433/243418637-1d6250fd-1515-4c10-a844-a32818ae6d46.png" alt="YOLOv8 trackers visualization">
 
-## Updates
+Object tracking in the realm of video analytics is a critical task that not only identifies the location and class of objects within the frame but also maintains a unique ID for each detected object as the video progresses. The applications are limitless—ranging from surveillance and security to real-time sports analytics.
 
-- 2025/11/18: [A Demo and Tutorial of YOLOv13](https://app.hyper.ai/console/public/tutorials/NIC3cpjlw7u) is online. Thanks to [HyperAI](https://hyper.ai/cn)!
+## Why Choose Ultralytics YOLO for Object Tracking?
 
-- 2025/07/19: [HuggingFace Spaces Demo](https://huggingface.co/spaces/atalaydenknalbant/Yolov13) is online. Thanks to [Atalay](https://github.com/atalaydenknalbant)!
+The output from Ultralytics trackers is consistent with standard object detection but has the added value of object IDs. This makes it easy to track objects in video streams and perform subsequent analytics. Here's why you should consider using Ultralytics YOLO for your object tracking needs:
 
-- 2025/06/27: [Converting YOLOv13](https://github.com/kaylorchen/ai_framework_demo) to Huawei Ascend (OM), Rockchip (RKNN) formats is supported. Thanks to [kaylorchen](https://github.com/kaylorchen)!
+- **Efficiency:** Process video streams in real-time without compromising accuracy.
+- **Flexibility:** Supports multiple tracking algorithms and configurations.
+- **Ease of Use:** Simple Python API and CLI options for quick integration and deployment.
+- **Customizability:** Easy to use with custom trained YOLO models, allowing integration into domain-specific applications.
 
-- 2025/06/25: [FastAPI REST API](https://github.com/iMoonLab/yolov13/tree/main/examples/YOLOv13-FastAPI-REST-API) is supported. Thanks to [MohibShaikh](https://github.com/MohibShaikh)!
+**Video Tutorial:** [Object Detection and Tracking with Ultralytics YOLO](https://www.youtube.com/embed/hHyHmOtmEgs?si=VNZtXmm45Nb9s-N-).
 
-- 2025/06/24: 🔥 **The paper of YOLOv13 can be downloaded**: [🔗 YOLOv13: Real-Time Object Detection with Hypergraph-Enhanced Adaptive Visual Perception](https://arxiv.org/abs/2506.17733).
+## Features at a Glance
 
-- 2025/06/24: [Android deployment](https://github.com/mpj1234/ncnn-yolov13-android/tree/main) is supported. Thanks to [mpj1234](https://github.com/mpj1234)!
+Ultralytics YOLO extends its object detection features to provide robust and versatile object tracking:
 
-- 2025/06/22: YOLOv13 model weights released.
+- **Real-Time Tracking:** Seamlessly track objects in high-frame-rate videos.
+- **Multiple Tracker Support:** Choose from a variety of established tracking algorithms.
+- **Customizable Tracker Configurations:** Tailor the tracking algorithm to meet specific requirements by adjusting various parameters.
 
-- 2025/06/21: The code of YOLOv13 has been open-sourced.
+## Available Trackers
 
+Ultralytics YOLO supports the following tracking algorithms. They can be enabled by passing the relevant YAML configuration file such as `tracker=tracker_type.yaml`:
 
+- [BoT-SORT](https://github.com/NirAharon/BoT-SORT) - Use `botsort.yaml` to enable this tracker.
+- [ByteTrack](https://github.com/ifzhang/ByteTrack) - Use `bytetrack.yaml` to enable this tracker.
 
-<h2>Table of Contents</h2>
+The default tracker is BoT-SORT.
 
-- [Technical Briefing 💡](#technical-briefing-)
-- [Main Results 🏆](#main-results-)
-  - [1. MS COCO Benchmark](#1-ms-coco-benchmark)
-  - [2. Visualizations](#2-visualizations)
-- [Quick Start 🚀](#quick-start-)
-  - [1. Install Dependencies](#1-install-dependencies)
-  - [2. Validation](#2-validation)
-  - [3. Training](#3-training)
-  - [4. Prediction](#4-prediction)
-  - [5. Export](#5-export)
-- [Related Projects 🔗](#related-projects-)
-- [Cite YOLOv13 📝](#cite-yolov13-)
+## Tracking
 
+To run the tracker on video streams, use a trained Detect, Segment or Pose model such as YOLO11n, YOLO11n-seg and YOLO11n-pose.
 
-
-## Technical Briefing 💡
-
-
-**Introducing YOLOv13**—the next-generation real-time detector with cutting-edge performance and efficiency. YOLOv13 family includes four variants: Nano, Small, Large, and X-Large, powered by:
-
-* **HyperACE: Hypergraph-based Adaptive Correlation Enhancement**
-
-  * Treats pixels in multi-scale feature maps as hypergraph vertices.
-  * Adopts a learnable hyperedge construction module to adaptively exploring high-order correlations between vertices.
-  * A message passing module with linear complexity is leveraged to effectively aggregate multi-scale features with the guidance of high-order correlations to achieve effective visual perception of complex scenarios.
-
-* **FullPAD: Full-Pipeline Aggregation-and-Distribution Paradigm**
-
-  * Uses the HyperACE to aggregate multi-scale features of the backbone and extract high-order correlations in the hypergraph space.
-  * FullPAD paradigm further leverages three separate tunnels to forward these correlation-enhanced features to the connection between the backbone and neck, the internal layers of the neck, and the connection between the neck and head, respectively. In this way, YOLOv13 achieves fine‑grained information flow and representational synergy across the entire pipeline.
-  * FullPAD significantly improves gradient propagation and enhances the detection performance.
-
-* **Model Lightweighting via DS-based Blocks**
-
-  * Replaces large-kernel convolutions with blocks building based on depthwise separable convolutions (DSConv, DS-Bottleneck, DS-C3k, DS-C3k2), preserving receptive field while greatly reducing parameters and computation.
-  * Achieves faster inference speed without sacrificing accuracy.
-
-> YOLOv13 seamlessly combines hypergraph computation with end-to-end information collaboration to deliver a more accurate, robust, and efficient real-time detection solution.
-
-
-
-## Main Results 🏆
-
-### 1. MS COCO Benchmark
-
-**Table 1. Quantitative comparison with other state-of-the-art real-time object detectors on the MS COCO dataset**
-
-
-| **Method** | **FLOPs (G)** | **Parameters(M)** | **AP<sub>50:95</sub><sup>val</sup>** | **AP<sub>50</sub><sup>val</sup>** | **AP<sub>75</sub><sup>val</sup>** | **Latency (ms)** |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| YOLOv6-3.0-N | 11.4 | 4.7 | 37.0 | 52.7 | – | 2.74 |
-| Gold-YOLO-N | 12.1 | 5.6 | 39.6 | 55.7 | – | 2.97 |
-| YOLOv8-N | 8.7 | 3.2 | 37.4 | 52.6 | 40.5 | 1.77 |
-| YOLOv10-N | 6.7 | 2.3 | 38.5 | 53.8 | 41.7 | 1.84 |
-| YOLO11-N | 6.5 | 2.6 | 38.6 | 54.2 | 41.6 | 1.53 |
-| YOLOv12-N | 6.5 | 2.6 | 40.1 | 56.0 | 43.4 | 1.83 |
-| **YOLOv13-N** | **6.4** | **2.5** | **41.6** | **57.8** | **45.1** | **1.97** |
-|           |           |            |                 |           | 
-| YOLOv6-3.0-S | 45.3 | 18.5 | 44.3 | 61.2 | – | 3.42 |
-| Gold-YOLO-S | 46.0 | 21.5 | 45.4 | 62.5 | – | 3.82 |
-| YOLOv8-S | 28.6 | 11.2 | 45.0 | 61.8 | 48.7 | 2.33 |
-| RT-DETR-R18 | 60.0 | 20.0 | 46.5 | 63.8 | – | 4.58 |
-| RT-DETRv2-R18 | 60.0 | 20.0 | 47.9 | 64.9 | – | 4.58 |
-| YOLOv9-S | 26.4 | 7.1 | 46.8 | 63.4 | 50.7 | 3.44 |
-| YOLOv10-S | 21.6 | 7.2 | 46.3 | 63.0 | 50.4 | 2.53 |
-| YOLO11-S | 21.5 | 9.4 | 45.8 | 62.6 | 49.8 | 2.56 |
-| YOLOv12-S | 21.4 | 9.3 | 47.1 | 64.2 | 51.0 | 2.82 |
-| **YOLOv13-S** | **20.8** | **9.0** | **48.0** | **65.2** | **52.0** | **2.98** |
-|           |           |            |                 |           | 
-| YOLOv6-3.0-L | 150.7 | 59.6 | 51.8 | 69.2 | – | 9.01 |
-| Gold-YOLO-L | 151.7 | 75.1 | 51.8 | 68.9 | – | 10.69 |
-| YOLOv8-L | 165.2 | 43.7 | 53.0 | 69.8 | 57.7 | 8.13 |
-| RT-DETR-R50 | 136.0 | 42.0 | 53.1 | 71.3 | – | 6.93 |
-| RT-DETRv2-R50 | 136.0 | 42.0 | 53.4 | 71.6 | – | 6.93 |
-| YOLOv9-C | 102.1 | 25.3 | 53.0 | 70.2 | 57.8 | 6.64 |
-| YOLOv10-L | 120.3 | 24.4 | 53.2 | 70.1 | 57.2 | 7.31 |
-| YOLO11-L | 86.9 | 25.3 | 52.3 | 69.2 | 55.7 | 6.23 |
-| YOLOv12-L | 88.9 | 26.4 | 53.0 | 70.0 | 57.9 | 7.10 |
-| **YOLOv13-L** | **88.4** | **27.6** | **53.4** | **70.9** | **58.1** | **8.63** |
-|           |           |            |                 |           | 
-| YOLOv8-X | 257.8 | 68.2 | 54.0 | 71.0 | 58.8 | 12.83 |
-| RT-DETR-R101 | 259.0 | 76.0 | 54.3 | 72.7 | – | 13.51 |
-| RT-DETRv2-R101| 259.0 | 76.0 | 54.3 | 72.8 | – | 13.51 |
-| YOLOv10-X | 160.4 | 29.5 | 54.4 | 71.3 | 59.3 | 10.70 |
-| YOLO11-X | 194.9 | 56.9 | 54.2 | 71.0 | 59.1 | 11.35 |
-| YOLOv12-X | 199.0 | 59.1 | 54.4 | 71.1 | 59.3 | 12.46 |
-| **YOLOv13-X** | **199.2** | **64.0** | **54.8** | **72.0** | **59.8** | **14.67** |
-
-
-### 2. Visualizations
-
-<div>
-    <img src="assets/vis.png" width="100%" height="100%">
-</div>
-
-**Visualization examples of YOLOv10-N/S, YOLO11-N/S, YOLOv12-N/S, and YOLOv13-N/S.**
-
-<div>
-    <img src="assets/hyperedge.png" width="60%" height="60%">
-</div>
-
-**Representative visualization examples of adaptive hyperedges. The hyperedges in the first and second columns mainly focus on the high-order interactions among objects in the foreground. The third column mainly focuses on the high-order interactions between the background and part of the foreground. The visualization of these hyperedges can intuitively reflect the high-order visual associations modeled by the YOLOv13.**
-
-
-
-## Quick Start 🚀
-
-### 1. Install Dependencies
-
-```
-wget https://github.com/Dao-AILab/flash-attention/releases/download/v2.7.3/flash_attn-2.7.3+cu11torch2.2cxx11abiFALSE-cp311-cp311-linux_x86_64.whl
-conda create -n yolov13 python=3.11
-conda activate yolov13
-pip install -r requirements.txt
-pip install -e .
-```
-YOLOv13 suppports Flash Attention acceleration.
-
-### 2. Validation
-[`YOLOv13-N`](https://github.com/iMoonLab/yolov13/releases/download/yolov13/yolov13n.pt)
-[`YOLOv13-S`](https://github.com/iMoonLab/yolov13/releases/download/yolov13/yolov13s.pt)
-[`YOLOv13-L`](https://github.com/iMoonLab/yolov13/releases/download/yolov13/yolov13l.pt)
-[`YOLOv13-X`](https://github.com/iMoonLab/yolov13/releases/download/yolov13/yolov13x.pt)
-
-Use the following code to validate the YOLOv13 models on the COCO dataset. Make sure to replace `{n/s/l/x}` with the desired model scale (nano, small, plus, or ultra).
-```python
-from ultralytics import YOLO
-
-model = YOLO('yolov13{n/s/l/x}.pt')  # Replace with the desired model scale
-```
-
-### 3. Training
-
-Use the following code to train the YOLOv13 models. Make sure to replace `yolov13n.yaml` with the desired model configuration file path, and `coco.yaml` with your coco dataset configuration file.
+#### Python
 
 ```python
 from ultralytics import YOLO
 
-model = YOLO('ultralytics/cfg/models/v13/yolov13n.yaml')
+# Load an official or custom model
+model = YOLO("yolo11n.pt")  # Load an official Detect model
+model = YOLO("yolo11n-seg.pt")  # Load an official Segment model
+model = YOLO("yolo11n-pose.pt")  # Load an official Pose model
+model = YOLO("path/to/best.pt")  # Load a custom trained model
 
-# Train the model
-results = model.train(
-    data='coco.yaml',
-    epochs=600,
-    batch=256,
-    imgsz=640,
-    scale=0.5,  # S:0.9; L:0.9; X:0.9
-    mosaic=1.0,
-    mixup=0.0,  # S:0.05; L:0.15; X:0.2
-    copy_paste=0.1,  # S:0.15; L:0.5; X:0.6
-    device="0,1,2,3",
-)
-
-# Evaluate model performance on the validation set
-metrics = model.val('coco.yaml')
-
-# Perform object detection on an image
-results = model("path/to/your/image.jpg")
-results[0].show()
-
+# Perform tracking with the model
+results = model.track(source="https://youtu.be/LNwODJXcvt4", show=True)  # Tracking with default tracker
+results = model.track(
+    source="https://youtu.be/LNwODJXcvt4", show=True, tracker="bytetrack.yaml"
+)  # Tracking with ByteTrack tracker
 ```
 
+#### CLI
 
-### 4. Prediction
-Use the following code to perform object detection using the YOLOv13 models. Make sure to replace `{n/s/l/x}` with the desired model scale.
+```bash
+# Perform tracking with various models using the command line interface
+yolo track model=yolo11n.pt source="https://youtu.be/LNwODJXcvt4"  # Official Detect model
+yolo track model=yolo11n-seg.pt source="https://youtu.be/LNwODJXcvt4"  # Official Segment model
+yolo track model=yolo11n-pose.pt source="https://youtu.be/LNwODJXcvt4"  # Official Pose model
+yolo track model=path/to/best.pt source="https://youtu.be/LNwODJXcvt4"  # Custom trained model
+
+# Track using ByteTrack tracker
+yolo track model=path/to/best.pt tracker="bytetrack.yaml"
+```
+
+As can be seen in the above usage, tracking is available for all Detect, Segment and Pose models run on videos or streaming sources.
+
+## Configuration
+
+### Tracking Arguments
+
+Tracking configuration shares properties with Predict mode, such as `conf`, `iou`, and `show`. For further configurations, refer to the [Predict](https://docs.ultralytics.com/modes/predict/) model page.
+
+#### Python
+
 ```python
 from ultralytics import YOLO
 
-model = YOLO('yolov13{n/s/l/x}.pt')  # Replace with the desired model scale
-model.predict()
+# Configure the tracking parameters and run the tracker
+model = YOLO("yolo11n.pt")
+results = model.track(source="https://youtu.be/LNwODJXcvt4", conf=0.3, iou=0.5, show=True)
 ```
 
-### 5. Export
-Use the following code to export the YOLOv13 models to ONNX or TensorRT format. Make sure to replace `{n/s/l/x}` with the desired model scale.
+#### CLI
+
+```bash
+# Configure tracking parameters and run the tracker using the command line interface
+yolo track model=yolo11n.pt source="https://youtu.be/LNwODJXcvt4" conf=0.3, iou=0.5 show
+```
+
+### Tracker Selection
+
+Ultralytics also allows you to use a modified tracker configuration file. To do this, simply make a copy of a tracker config file (for example, `custom_tracker.yaml`) from [ultralytics/cfg/trackers](https://github.com/ultralytics/ultralytics/tree/main/ultralytics/cfg/trackers) and modify any configurations (except the `tracker_type`) as per your needs.
+
+#### Python
+
 ```python
 from ultralytics import YOLO
-model = YOLO('yolov13{n/s/l/x}.pt')  # Replace with the desired model scale
-model.export(format="engine", half=True)  # or format="onnx"
+
+# Load the model and run the tracker with a custom configuration file
+model = YOLO("yolo11n.pt")
+results = model.track(source="https://youtu.be/LNwODJXcvt4", tracker="custom_tracker.yaml")
 ```
 
-## Related Projects 🔗
+#### CLI
 
-- The code is based on [Ultralytics](https://github.com/ultralytics/ultralytics). Thanks for their excellent work!
-- Other wonderful works about Hypergraph Computation:
-  - "Hypergraph Neural Networks": [[paper](https://arxiv.org/abs/1809.09401)] [[code](https://github.com/iMoonLab/HGNN)]
-  - "HGNN+: General Hypergraph Nerual Networks": [[paper](https://ieeexplore.ieee.org/abstract/document/9795251)] [[code](https://github.com/iMoonLab/DeepHypergraph)]
-  - "SoftHGNN: Soft Hypergraph Neural Networks for General Visual Recognition": [[paper](https://arxiv.org/abs/2505.15325)] [[code](https://github.com/Mengqi-Lei/SoftHGNN)]
-
-## Cite YOLOv13 📝
-```bibtex
-@article{yolov13,
-  title={YOLOv13: Real-Time Object Detection with Hypergraph-Enhanced Adaptive Visual Perception},
-  author={Lei, Mengqi and Li, Siqi and Wu, Yihong and et al.},
-  journal={arXiv preprint arXiv:2506.17733},
-  year={2025}
-}
+```bash
+# Load the model and run the tracker with a custom configuration file using the command line interface
+yolo track model=yolo11n.pt source="https://youtu.be/LNwODJXcvt4" tracker='custom_tracker.yaml'
 ```
 
+For a comprehensive list of tracking arguments, refer to the [ultralytics/cfg/trackers](https://github.com/ultralytics/ultralytics/tree/main/ultralytics/cfg/trackers) page.
+
+## Python Examples
+
+### Persisting Tracks Loop
+
+Here is a Python script using OpenCV (`cv2`) and YOLO11 to run object tracking on video frames. This script still assumes you have already installed the necessary packages (`opencv-python` and `ultralytics`). The `persist=True` argument tells the tracker than the current image or frame is the next in a sequence and to expect tracks from the previous image in the current image.
+
+#### Python
+
+```python
+import cv2
+
+from ultralytics import YOLO
+
+# Load the YOLO11 model
+model = YOLO("yolo11n.pt")
+
+# Open the video file
+video_path = "path/to/video.mp4"
+cap = cv2.VideoCapture(video_path)
+
+# Loop through the video frames
+while cap.isOpened():
+    # Read a frame from the video
+    success, frame = cap.read()
+
+    if success:
+        # Run YOLO11 tracking on the frame, persisting tracks between frames
+        results = model.track(frame, persist=True)
+
+        # Visualize the results on the frame
+        annotated_frame = results[0].plot()
+
+        # Display the annotated frame
+        cv2.imshow("YOLO11 Tracking", annotated_frame)
+
+        # Break the loop if 'q' is pressed
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+    else:
+        # Break the loop if the end of the video is reached
+        break
+
+# Release the video capture object and close the display window
+cap.release()
+cv2.destroyAllWindows()
+```
+
+Please note the change from `model(frame)` to `model.track(frame)`, which enables object tracking instead of simple detection. This modified script will run the tracker on each frame of the video, visualize the results, and display them in a window. The loop can be exited by pressing 'q'.
+
+### Plotting Tracks Over Time
+
+Visualizing object tracks over consecutive frames can provide valuable insights into the movement patterns and behavior of detected objects within a video. With Ultralytics YOLO11, plotting these tracks is a seamless and efficient process.
+
+In the following example, we demonstrate how to utilize YOLO11's tracking capabilities to plot the movement of detected objects across multiple video frames. This script involves opening a video file, reading it frame by frame, and utilizing the YOLO model to identify and track various objects. By retaining the center points of the detected bounding boxes and connecting them, we can draw lines that represent the paths followed by the tracked objects.
+
+#### Python
+
+```python
+from collections import defaultdict
+
+import cv2
+import numpy as np
+
+from ultralytics import YOLO
+
+# Load the YOLO11 model
+model = YOLO("yolo11n.pt")
+
+# Open the video file
+video_path = "path/to/video.mp4"
+cap = cv2.VideoCapture(video_path)
+
+# Store the track history
+track_history = defaultdict(lambda: [])
+
+# Loop through the video frames
+while cap.isOpened():
+    # Read a frame from the video
+    success, frame = cap.read()
+
+    if success:
+        # Run YOLO11 tracking on the frame, persisting tracks between frames
+        results = model.track(frame, persist=True)
+
+        # Get the boxes and track IDs
+        boxes = results[0].boxes.xywh.cpu()
+        track_ids = results[0].boxes.id.int().cpu().tolist()
+
+        # Visualize the results on the frame
+        annotated_frame = results[0].plot()
+
+        # Plot the tracks
+        for box, track_id in zip(boxes, track_ids):
+            x, y, w, h = box
+            track = track_history[track_id]
+            track.append((float(x), float(y)))  # x, y center point
+            if len(track) > 30:  # retain 90 tracks for 90 frames
+                track.pop(0)
+
+            # Draw the tracking lines
+            points = np.hstack(track).astype(np.int32).reshape((-1, 1, 2))
+            cv2.polylines(
+                annotated_frame,
+                [points],
+                isClosed=False,
+                color=(230, 230, 230),
+                thickness=10,
+            )
+
+        # Display the annotated frame
+        cv2.imshow("YOLO11 Tracking", annotated_frame)
+
+        # Break the loop if 'q' is pressed
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
+    else:
+        # Break the loop if the end of the video is reached
+        break
+
+# Release the video capture object and close the display window
+cap.release()
+cv2.destroyAllWindows()
+```
+
+### Multithreaded Tracking
+
+Multithreaded tracking provides the capability to run object tracking on multiple video streams simultaneously. This is particularly useful when handling multiple video inputs, such as from multiple surveillance cameras, where concurrent processing can greatly enhance efficiency and performance.
+
+In the provided Python script, we make use of Python's `threading` module to run multiple instances of the tracker concurrently. Each thread is responsible for running the tracker on one video file, and all the threads run simultaneously in the background.
+
+To ensure that each thread receives the correct parameters (the video file and the model to use), we define a function `run_tracker_in_thread` that accepts these parameters and contains the main tracking loop. This function reads the video frame by frame, runs the tracker, and displays the results.
+
+Two different models are used in this example: `yolo11n.pt` and `yolo11n-seg.pt`, each tracking objects in a different video file. The video files are specified in `video_file1` and `video_file2`.
+
+The `daemon=True` parameter in `threading.Thread` means that these threads will be closed as soon as the main program finishes. We then start the threads with `start()` and use `join()` to make the main thread wait until both tracker threads have finished.
+
+Finally, after all threads have completed their task, the windows displaying the results are closed using `cv2.destroyAllWindows()`.
+
+#### Python
+
+```python
+import threading
+
+import cv2
+
+from ultralytics import YOLO
+
+
+def run_tracker_in_thread(filename, model):
+    """Starts multi-thread tracking on video from `filename` using `model` and displays results frame by frame."""
+    video = cv2.VideoCapture(filename)
+    frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    for _ in range(frames):
+        ret, frame = video.read()
+        if ret:
+            results = model.track(source=frame, persist=True)
+            res_plotted = results[0].plot()
+            cv2.imshow("p", res_plotted)
+            if cv2.waitKey(1) == ord("q"):
+                break
+
+
+# Load the models
+model1 = YOLO("yolo11n.pt")
+model2 = YOLO("yolo11n-seg.pt")
+
+# Define the video files for the trackers
+video_file1 = "path/to/video1.mp4"
+video_file2 = "path/to/video2.mp4"
+
+# Create the tracker threads
+tracker_thread1 = threading.Thread(target=run_tracker_in_thread, args=(video_file1, model1), daemon=True)
+tracker_thread2 = threading.Thread(target=run_tracker_in_thread, args=(video_file2, model2), daemon=True)
+
+# Start the tracker threads
+tracker_thread1.start()
+tracker_thread2.start()
+
+# Wait for the tracker threads to finish
+tracker_thread1.join()
+tracker_thread2.join()
+
+# Clean up and close windows
+cv2.destroyAllWindows()
+```
+
+This example can easily be extended to handle more video files and models by creating more threads and applying the same methodology.
+
+## Contribute New Trackers
+
+Are you proficient in multi-object tracking and have successfully implemented or adapted a tracking algorithm with Ultralytics YOLO? We invite you to contribute to our Trackers section in [ultralytics/cfg/trackers](https://github.com/ultralytics/ultralytics/tree/main/ultralytics/cfg/trackers)! Your real-world applications and solutions could be invaluable for users working on tracking tasks.
+
+By contributing to this section, you help expand the scope of tracking solutions available within the Ultralytics YOLO framework, adding another layer of functionality and utility for the community.
+
+To initiate your contribution, please refer to our [Contributing Guide](https://docs.ultralytics.com/help/contributing/) for comprehensive instructions on submitting a Pull Request (PR) 🛠️. We are excited to see what you bring to the table!
+
+Together, let's enhance the tracking capabilities of the Ultralytics YOLO ecosystem 🙏!
